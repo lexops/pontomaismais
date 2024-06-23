@@ -1,15 +1,16 @@
 package xyz.lexops.pontomaismais.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@AllArgsConstructor
+@Getter
 public enum Role {
     BASIC("B"),
     ADMIN("A"),
     EMPLOYEE("E");
 
     private final String code;
-
-    Role(String code) {
-        this.code = code;
-    }
 
     public static Role fromCode(String code) throws IllegalArgumentException {
         for (Role role:Role.values()){
@@ -20,7 +21,4 @@ public enum Role {
         throw new IllegalArgumentException("Unknown role code:"+code);
     }
 
-    public String getCode() {
-        return code;
-    }
 }
