@@ -1,6 +1,7 @@
 package xyz.lexops.pontomaismais.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import xyz.lexops.pontomaismais.model.User;
@@ -15,24 +16,24 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @GetMapping
+    @GetMapping("/user")
     public List<User> getAllUsers(){
         return userService.findAll();
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/user/{id}")
     public ResponseEntity<User> getUserById(@PathVariable Long id){
         Optional<User> user = userService.findById(id);
         return user.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @PostMapping
-    public User createUser(@RequestBody User user){
-        return userService.save(user);
+    @PostMapping("/user")
+    public ResponseEntity<User> createUser(@RequestBody User user){
+        return new ResponseEntity<>(userService.save(user), HttpStatus.CREATED);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/user/{id}")
     public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User userDetails){
         Optional<User> user = userService.findById(id);
         if (user.isPresent()) {
@@ -47,7 +48,7 @@ public class UserController {
         }
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/user/{id}")
     public ResponseEntity<Void> deleteProduct(@PathVariable Long id){
         Optional<User> user = userService.findById(id);
         if (user.isPresent()) {
