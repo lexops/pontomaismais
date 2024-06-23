@@ -40,6 +40,7 @@ public class UserController {
             updatedUser.setName(userDetails.getName());
             updatedUser.setEmail(userDetails.getEmail());
             updatedUser.setPassword(userDetails.getPassword());
+            updatedUser.setRole(userDetails.getRole().getCode());
             return ResponseEntity.ok(userService.save(updatedUser));
         } else {
             return ResponseEntity.notFound().build();
