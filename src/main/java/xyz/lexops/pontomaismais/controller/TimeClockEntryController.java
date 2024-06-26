@@ -26,41 +26,25 @@ public class TimeClockEntryController {
 
     @GetMapping("/employee/{employeeId}/time-clock")
     public ResponseEntity<List<TimeClockEntry>> getAllTimeClockEntrys(@PathVariable Long employeeId){
-        Optional<Employee> employee = employeeService.findById(employeeId);
-        if (employee.isPresent()){
-            return ResponseEntity.ok(timeClockEntryService.findTimeClockEntriesByEmployeeId(employeeId));
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        Employee employee = employeeService.findById(employeeId);
+        // TODO - Improve exceptin handling for related entities
+        return ResponseEntity.ok(timeClockEntryService.findTimeClockEntriesByEmployeeId(employeeId));
     }
 
     @PostMapping("/employee/{employeeId}/time-clock")
     public ResponseEntity<TimeClockEntry> createTimeClockEntry(@PathVariable Long employeeId){
-        Optional<Employee> employee = employeeService.findById(employeeId);
-        if (employee.isPresent()){
-            TimeClockEntry timeClockEntry =
-                    new TimeClockEntry(employee.get(), LocalDateTime.now());
-            return new ResponseEntity<>(timeClockEntryService.save(timeClockEntry), HttpStatus.CREATED);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        Employee employee = employeeService.findById(employeeId);
+        TimeClockEntry timeClockEntry =
+                new TimeClockEntry(employee, LocalDateTime.now());
+        return new ResponseEntity<>(timeClockEntryService.save(timeClockEntry), HttpStatus.CREATED);
     }
 
     @PutMapping("/employee/{employeeId}/time-clock")
     public ResponseEntity<TimeClockEntry> updateTimeClockEntry(@PathVariable Long employeeId){
-        Optional<Employee> employee = employeeService.findById(employeeId);
-        if (employee.isPresent()){
-            Optional<TimeClockEntry> timeClockEntry =
-                    timeClockEntryService.findLastTimeEntryFromEmployeeId(employeeId);
-            if (timeClockEntry.isPresent()) {
-                TimeClockEntry updatedTimeClockEntry = timeClockEntry.get();
-                updatedTimeClockEntry.setClockOut(LocalDateTime.now());
-                return ResponseEntity.ok(timeClockEntryService.save(updatedTimeClockEntry));
-            } else {
-                return ResponseEntity.notFound().build();
-            }
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        Employee employee = employeeService.findById(employeeId);
+        TimeClockEntry timeClockEntry =
+                timeClockEntryService.findLastTimeEntryFromEmployeeId(employeeId);
+        timeClockEntry.setClockOut(LocalDateTime.now());
+        return ResponseEntity.ok(timeClockEntryService.save(timeClockEntry));
     }
 }

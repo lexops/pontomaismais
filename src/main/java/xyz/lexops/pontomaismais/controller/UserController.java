@@ -23,9 +23,7 @@ public class UserController {
 
     @GetMapping("/user/{id}")
     public ResponseEntity<User> getUserById(@PathVariable Long id){
-        Optional<User> user = userService.findById(id);
-        return user.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+        return new ResponseEntity<>(userService.findById(id), HttpStatus.OK);
     }
 
     @PostMapping("/user")
@@ -35,28 +33,20 @@ public class UserController {
 
     @PutMapping("/user/{id}")
     public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User userDetails){
-        Optional<User> user = userService.findById(id);
-        if (user.isPresent()) {
-            User updatedUser = user.get();
-            updatedUser.setName(userDetails.getName());
-            updatedUser.setEmail(userDetails.getEmail());
-            updatedUser.setPassword(userDetails.getPassword());
-            updatedUser.setRole(userDetails.getRole().getCode());
-            return ResponseEntity.ok(userService.save(updatedUser));
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        User user = userService.findById(id);
+        user.setName(userDetails.getName());
+        user.setEmail(userDetails.getEmail());
+        user.setPassword(userDetails.getPassword());
+        user.setRole(userDetails.getRole().getCode());
+
+        return ResponseEntity.ok(user);
     }
 
     @DeleteMapping("/user/{id}")
     public ResponseEntity<Void> deleteProduct(@PathVariable Long id){
-        Optional<User> user = userService.findById(id);
-        if (user.isPresent()) {
-            userService.deleteById(id);
-            return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        User user = userService.findById(id);
+        userService.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 
 }

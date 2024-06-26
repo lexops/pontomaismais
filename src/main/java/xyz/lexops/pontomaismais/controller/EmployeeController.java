@@ -1,6 +1,7 @@
 package xyz.lexops.pontomaismais.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import xyz.lexops.pontomaismais.model.Employee;
@@ -23,9 +24,8 @@ public class EmployeeController {
 
     @GetMapping("/employee/{id}")
     public ResponseEntity<Employee> getEmployeeById(@PathVariable Long id){
-        Optional<Employee> employee = employeeService.findById(id);
-        return employee.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+        Employee employee = employeeService.findById(id);
+        return new ResponseEntity<>(employee, HttpStatus.OK);
     }
 
     @PostMapping("/employee")
@@ -35,30 +35,21 @@ public class EmployeeController {
 
     @PutMapping("/employee/{id}")
     public ResponseEntity<Employee> updateEmployee(@PathVariable Long id, @RequestBody Employee employeeDetails){
-        Optional<Employee> employee = employeeService.findById(id);
-        if (employee.isPresent()) {
-            Employee updatedEmployee = employee.get();
-            updatedEmployee.setName(employeeDetails.getName());
-            updatedEmployee.setEmail(employeeDetails.getEmail());
-            updatedEmployee.setPassword(employeeDetails.getPassword());
-            updatedEmployee.setRole(employeeDetails.getRole().getCode());
-            updatedEmployee.setPosition(employeeDetails.getPosition());
-            updatedEmployee.setDepartment(employeeDetails.getDepartment());
-            return ResponseEntity.ok(employeeService.save(updatedEmployee));
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        Employee employee = employeeService.findById(id);
+        employee.setName(employeeDetails.getName());
+        employee.setEmail(employeeDetails.getEmail());
+        employee.setPassword(employeeDetails.getPassword());
+        employee.setRole(employeeDetails.getRole().getCode());
+        employee.setPosition(employeeDetails.getPosition());
+        employee.setDepartment(employeeDetails.getDepartment());
+
+        return ResponseEntity.ok(employee);
     }
 
     @DeleteMapping("/employee/{id}")
-    public ResponseEntity<Void> deleteProduct(@PathVariable Long id){
-        Optional<Employee> employee = employeeService.findById(id);
-        if (employee.isPresent()) {
-            employeeService.deleteById(id);
-            return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
+        Employee employee = employeeService.findById(id);
+        employeeService.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
-
 }

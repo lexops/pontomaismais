@@ -2,6 +2,7 @@ package xyz.lexops.pontomaismais.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import xyz.lexops.pontomaismais.exceptions.EmployeeNotFoundException;
 import xyz.lexops.pontomaismais.model.TimeClockEntry;
 import xyz.lexops.pontomaismais.repository.TimeClockEntryRepository;
 
@@ -18,16 +19,25 @@ public class TimeClockEntryService {
         return timeClockEntryRepository.findByEmployeeId(employeeId);
     }
 
-    public Optional<TimeClockEntry> findLastTimeEntryFromEmployeeId(Long employeeId) {
-        return timeClockEntryRepository.findTop1ByEmployeeIdOrderByClockInDesc(employeeId);
+    public TimeClockEntry findLastTimeEntryFromEmployeeId(Long employeeId) throws EmployeeNotFoundException {
+        Optional<TimeClockEntry> timeClockEntry =
+                timeClockEntryRepository.findTop1ByEmployeeIdOrderByClockInDesc(employeeId);
+        if (timeClockEntry.isPresent()){
+            return timeClockEntry.get();
+        }
+        throw new EmployeeNotFoundException();
     }
 
     public List<TimeClockEntry> findAll(){
         return timeClockEntryRepository.findAll();
     }
 
-    public Optional<TimeClockEntry> findById(Long id){
-        return timeClockEntryRepository.findById(id);
+    public TimeClockEntry findById(Long id) throws EmployeeNotFoundException {
+        Optional<TimeClockEntry> timeClockEntry = timeClockEntryRepository.findById(id);
+        if (timeClockEntry.isPresent()){
+            return timeClockEntry.get();
+        }
+        throw new EmployeeNotFoundException();
     }
 
     public TimeClockEntry save(TimeClockEntry timeClockEntry){
